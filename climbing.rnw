@@ -1,0 +1,83 @@
+\documentclass[a4paper, 11pt, landscape]{article}
+
+% \usepackage{crla_titlepage}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{pdflscape}
+\usepackage[total={10in, 7in}]{geometry}
+
+\author{Benjamin Chausse}
+\date{\today}
+\title{Climbing Attendance Over Time at La Débarque}
+% \personaltitle{}
+% \classnb{}
+% \subject{}
+% \group{}
+% \teacher{}
+
+\begin{document}
+\maketitle
+\newpage
+<<LIBRARIES>>=
+library(ggplot2)
+library(ggforce)
+library(scales)
+@
+
+
+<<CSV>>=
+attendance <- data.frame(
+                         read.csv("./debarque.csv",
+                                  header=TRUE,
+                                  sep=","))
+attendance$DAY <- as.POSIXct(attendance$DAY,format="%Y-%m-%d")
+attendance$TIME <- as.POSIXct(attendance$TIME,format="%R")
+attendance$WEEKDAY <- weekdays(attendance$DAY)
+attendance$WEEKDAY <- factor(attendance$WEEKDAY,
+                             levels=c(
+                                      "Sunday",
+                                      "Monday",
+                                      "Tuesday",
+                                      "Wednesday",
+                                      "Thursday",
+                                      "Friday",
+                                      "Saturday"))
+@
+
+<<PLOTTING>>=
+# Day of the week averages
+week <- ggplot(attendance,
+                   aes(x=TIME,
+                       y=CLIMBERS,
+                       group=WEEKDAY,
+                       col=as.factor(DAY))) +
+  geom_path() +
+  geom_smooth(method="gam") +
+  scale_y_continuous(
+    breaks=seq(0,25,1),
+    limits=c(0,25),
+    labels = scales::number_format(accuracy = 1)) +
+  scale_x_datetime(
+    labels=date_format("%R", tz="America/Toronto"),
+    date_breaks="3 hour") +
+  labs(x="Heure de la journée",
+       y="Nombre de grimpeurs") +
+  theme(legend.position="none") +
+  facet_wrap(~WEEKDAY)
+
+# Daily attendances through time
+timeline <- ggplot(attendance, aes(x=DAY, y=CLIMBERS)) +
+  geom_line(stat="summary", fun=mean)
+@
+\centering
+<<PRINT, echo=FALSE, fig.fullwidth=TRUE, fig.width=10>>=
+print(week)
+@
+
+<<TIMELINE, fig.width=10, fig.fullwidth=TRUE, echo=FALSE>>=
+print(timeline)
+@
+
+
+
+\end{document}

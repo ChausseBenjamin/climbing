@@ -1,0 +1,11 @@
+# Knitr files
+climbing-concordance.tex
+figure
+*.tex
+
+# LaTeX files
+*.log
+*.aux
+*.synctex.gz
+*.fls
+*.fdb_latexmk
