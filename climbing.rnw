@@ -8,7 +8,7 @@
 
 \author{Benjamin Chausse}
 \date{\today}
-\title{Climbing Attendance Over Time at La Débarque}
+\title{Climbers Over Time at La Débarque}
 % \personaltitle{}
 % \classnb{}
 % \subject{}
@@ -18,11 +18,13 @@
 \begin{document}
 \maketitle
 \newpage
+
 <<LIBRARIES>>=
 library(ggplot2)
 library(ggforce)
 library(scales)
 @
+
 <<CSV>>=
 attendance <- data.frame(
                          read.csv("./debarque.csv",
@@ -41,7 +43,7 @@ attendance$WEEKDAY <- factor(attendance$WEEKDAY,
                                       "Friday",
                                       "Saturday"))
 @
-
+\newpage
 <<WEEK-PLOT>>=
 # Day of the week averages
 week <- ggplot(attendance,
@@ -58,8 +60,8 @@ week <- ggplot(attendance,
   scale_x_datetime(
     labels=date_format("%R", tz="America/Toronto"),
     date_breaks="2 hours") +
-  labs(x="Heure de la journée",
-       y="Nombre de grimpeurs") +
+  labs(x="Time of day",
+       y="Number of climbers") +
   theme(legend.position="none") +
   facet_wrap(~WEEKDAY)
 @
@@ -73,7 +75,7 @@ timeline <- ggplot(attendance, aes(x=DAY, y=CLIMBERS)) +
 print(week)
 @
 
-<<PRINT-TIMELINE, fig.width=10, fig.fullwidth=TRUE, echo=FALSE>>=
-print(timeline)
-@
+% <<PRINT-TIMELINE, fig.width=10, fig.fullwidth=TRUE, echo=FALSE>>=
+% print(timeline)
+% @
 \end{document}
